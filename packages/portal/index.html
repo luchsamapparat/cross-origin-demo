@@ -6,6 +6,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal</title>
     <style>
+        * {
+            font-family: sans-serif;
+        }
+
+        code {
+            font-family: monospace;
+            font-size: 15px;
+            color: #a52a2a;
+        }
+
+        a, a:visited, a:active {
+            color: #0000ee;
+        }
+
         pre,
         script {
             display: block;
@@ -20,27 +34,50 @@
 <body>
     <h1>Portal</h1>
 
-    <script style="display: block">
-        let windowRef = null; // this will hold the reference to the opened window
-        let windowName = 'app-window'; // the name of the opened window, can be used as link target
+    <section>
+        <p>
+            This demo consists of a portal application and two apps running on <code>http://localhost</code> and ports <code>8080</code>, <code>8081</code> and <code>8082</code> respectively.
+            This means they are running on different origins and are therefore subject to the <a href="https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy" target="_blank">same-origin policy</a>.
+        </p>
 
-        const urls = {
-            app1: '<!--#echo var="app1_url"-->',
-            app2: '<!--#echo var="app2_url"-->'
-        };
-    </script>
+        <script style="display: block">
+            let windowRef = null; // this will hold the reference to the opened window
+            let windowName = 'app-window'; // the name of the opened window, can be used as link target
+
+            const urls = {
+                app1: '<!--#echo var="app1_url"-->',
+                app2: '<!--#echo var="app2_url"-->'
+            };
+        </script>
+    </section>
 
     <section>
+        <h2>Programmatically open app1 in a new window</h2>
+
+        <p>
+            Popups that are opened programmatically may be initially blocked by the browser and
+            must be <a href="https://support.google.com/chrome/answer/95472?hl=en&co=GENIE.Platform%3DDesktop#zippy=%2Callow-pop-ups-and-redirects-from-a-site" target="_blank">explicitly allowed once</a>.
+        </p>
+
         <p><button id="open-app1-in-popup">open-app1-in-popup</button></p>
 
         <script style="display: block">
             document.getElementById('open-app1-in-popup').addEventListener('click', () => {
-                windowRef = window.open(urls.app1, windowName, 'popup');
+                windowRef = window.open(urls.app1, windowName, 'popup'); // if popup is omitted, the window will open in a new tab
             });
         </script>
     </section>
 
     <section>
+        <h2>Programmatically open app2 and reuse window</h2>
+        
+        <p>
+            <code>window.open</code> returns a reference to the opened window which can be used to access and manipulate it.
+            However, in cross-origin scenarios, the opened window is subject to the same-origin policy
+            and <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/open#same-origin_policy" target="_blank">access is very limited</a>
+            (e.g. accessing the current URL, setting focus are not possible amongst other things).
+        </p>
+
         <p><button id="open-app2">open-app2</button></p>
 
         <script style="display: block">
@@ -55,6 +92,10 @@
     </section>
 
     <section>
+        <h2>Declaratively open app and reuse window</h2>
+
+        <p>When opening a window using <code>window.open</code> the provided name can be used to target that window via simple links and vice-versa.</p>
+
         <p><a id="link-app1" target="app-window">open app1</a></p>
         <p><a id="link-app2" target="app-window">open app2</a></p>
 
@@ -71,11 +112,18 @@
     </section>
 
     <section>
+        <h2>Send message to app window</h2>
+
         <p>
-        <form id="send-message-to-app-window" style="display: block;">
-            <input type="text" name="message" value="Hello from portal" placeholder="enter message" />
-            <button type="submit">send-message-to-app-window</button>
-        </form>
+            Cross-origin communication between windows is possible using the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage"><code>window.postMessage</code> method</a>
+            if a reference to the target window is available.
+        </p>
+        
+        <p>
+            <form id="send-message-to-app-window" style="display: block;">
+                <input type="text" name="message" value="Hello from portal" placeholder="enter message" />
+                <button type="submit">send-message-to-app-window</button>
+            </form>
         </p>
 
         <script style="display: block">

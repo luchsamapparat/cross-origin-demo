@@ -23,10 +23,16 @@
 
     <section>
         <p>
-        <form id="send-message-to-opener" style="display: block;">
-            <input type="text" name="message" value="Hello from app<!--#echo var="APP_IDENTIFIER"-->" placeholder="enter message" />
-            <button type="submit">send-message-to-opener</button>
-        </form>
+            When the app window has been opened by the portal, <code>window.opener</code> contains a reference to the portal window.
+            Since they are running on different origins, the <a href="https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy" target="_blank">same-origin policy</a> applies,
+            but communication is possible via <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage"><code>window.postMessage</code> method</a>.
+        </p>
+
+        <p>
+            <form id="send-message-to-opener" style="display: block;">
+                <input type="text" name="message" value="Hello from app<!--#echo var="APP_IDENTIFIER"-->" placeholder="enter message" />
+                <button type="submit">send-message-to-opener</button>
+            </form>
         </p>
 
         <script style="display: block">
