@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal</title>
+    <style>
+        pre,
+        script {
+            display: block;
+            white-space: pre;
+            font-family: monospace;
+            border: 1px solid #cccccc;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Portal</h1>
+
+    <script style="display: block">
+        let windowRef = null; // this will hold the reference to the opened window
+        let windowName = 'app-window'; // the name of the opened window, can be used as link target
+
+        const urls = {
+            app1: '<!--#echo var="app1_url"-->',
+            app2: '<!--#echo var="app2_url"-->'
+        };
+    </script>
+
+    <section>
+        <p><button id="open-app1-in-popup">open-app1-in-popup</button></p>
+
+        <script style="display: block">
+            document.getElementById('open-app1-in-popup').addEventListener('click', () => {
+                windowRef = window.open(urls.app1, windowName, 'popup');
+            });
+        </script>
+    </section>
+
+    <section>
+        <p><button id="open-app2">open-app2</button></p>
+
+        <script style="display: block">
+            document.getElementById('open-app2').addEventListener('click', () => {
+                if (windowRef === null || windowRef.closed) {
+                    windowRef = window.open(urls.app2, windowName, 'popup');
+                } else {
+                    windowRef.location.replace(urls.app2);
+                }
+            });
+        </script>
+    </section>
+
+    <section>
+        <p><a id="link-app1" target="app-window">open app1</a></p>
+        <p><a id="link-app2" target="app-window">open app2</a></p>
+
+        <pre id="app-links-src"></pre>
+
+        <script style="display: none;">
+            const links = [...document.querySelectorAll('a[id^="link-app"]')];
+
+            links.forEach(a => a.href = urls[a.id.replace('link-', '')]);
+
+            document.getElementById('app-links-src').appendChild(
+                document.createTextNode(`${links.map(a => a.outerHTML).join('\n')}`));
+        </script>
+    </section>
+
+    <section>
+        <p>
+        <form id="send-message-to-app-window" style="display: block;">
+            <input type="text" name="message" value="Hello from portal" placeholder="enter message" />
+            <button type="submit">send-message-to-app-window</button>
+        </form>
+        </p>
+
+        <script style="display: block">
+            document.getElementById('send-message-to-app-window').addEventListener('submit', (event) => {
+                event.preventDefault();
+                if (windowRef !== null && !windowRef.closed) {
+                    const message = new FormData(event.target).get('message');
+                    windowRef.postMessage(message, '*'); // * should be the origin of the opener window
+                }
+            });
+        </script>
+    </section>
+
+    <section>
+        <h2>Messages</h2>
+        <ul id="message-list"></ul>
+
+        <script style="display: block">
+            window.addEventListener('message', (event) => {
+                const messageList = document.getElementById('message-list');
+                const li = document.createElement('li');
+                li.textContent = `${event.origin}: ${event.data}`;
+                messageList.prepend(li);
+            });
+        </script>
+    </section>
+</body>
+
+</html>
