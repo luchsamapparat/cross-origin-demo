@@ -1,8 +1,7 @@
 # Cross-Origin Demo
 
-Start all containers:
-
 ```
+git clone git@github.com:luchsamapparat/cross-origin-demo.git
 docker-compose up -d
 ```
 
