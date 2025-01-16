@@ -40,7 +40,10 @@
                 event.preventDefault();
                 if (window.opener && !window.opener.closed) {
                     const message = new FormData(event.target).get('message');
-                    window.opener.postMessage(message, '*'); // * should be the origin of the opener window
+                    window.opener.postMessage({
+                        type: 'demo',
+                        message
+                    }, '*'); // * should be the origin of the opener window
                 } else {
                     alert('No opener window found');
                 }
@@ -54,9 +57,10 @@
 
         <script style="display: block">
             window.addEventListener('message', (event) => {
+                if (event.data.type !== 'demo') return;
                 const messageList = document.getElementById('message-list');
                 const li = document.createElement('li');
-                li.textContent = `${event.origin}: ${event.data}`;
+                li.textContent = `${event.origin}: ${event.data.message}`;
                 messageList.prepend(li);
             });
         </script>
