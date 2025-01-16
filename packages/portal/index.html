@@ -109,6 +109,17 @@
             document.getElementById('app-links-src').appendChild(
                 document.createTextNode(`${links.map(a => a.outerHTML).join('\n')}`));
         </script>
+
+        <p>It is possible to retrieve a reference to a window that has been opened using a simple link at a later point.</p>
+
+        <script>
+            links.forEach(a => a.addEventListener('click', () => {
+                if (windowRef === null || windowRef.closed) {
+                    // retrieve a reference to the opened window
+                    windowRef = window.open('', windowName);
+                }
+            }));
+        </script>
     </section>
 
     <section>
